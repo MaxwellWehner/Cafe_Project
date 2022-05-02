@@ -1,0 +1,323 @@
+package cafe_project;
+
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class CafeApp {
+
+	public static void main(String[] args) {
+		ArrayList<Product> productList = new ArrayList<>();
+
+		Scanner userInput = new Scanner(System.in);
+		boolean quit = false;
+
+		while (!quit) {
+			System.out.println("Please select from the following menu:\r\n" + "1: Coffee\r\n" + "2: Cappuccino\r\n"
+					+ "3: Espresso\r\n" + "4: Check Out");
+			int userOption = userInput.nextInt();
+
+			switch (userOption) {
+			case 1: {
+				Product coffee = new Coffee("Coffee", 1.00, "Black coffee");
+				System.out.format("How much %s do you want to buy?\n", coffee.getName());
+				coffee.setQuantity(userInput.nextInt());
+				userInput.nextLine();
+				System.out.println("Milk?(true/false)");
+				boolean opt1 = userInput.nextBoolean();
+				System.out.println("Sugar?(true/false)");
+				boolean opt2 = userInput.nextBoolean();
+				coffee.addOptions(opt1, opt2);
+				productList.add(coffee);
+				break;
+			}
+			case 2: {
+				Product cuppuccino = new Cuppuccino("cuppuccino", 2.99, "cuppuccino coffee");
+				System.out.format("How much %s do you want to buy?\n", cuppuccino.getName());
+				cuppuccino.setQuantity(userInput.nextInt());
+				userInput.nextLine();
+				System.out.println("Peppermint?(true/false)");
+				boolean opt1 = userInput.nextBoolean();
+				System.out.println("Whipped Cream?(true/false)");
+				boolean opt2 = userInput.nextBoolean();
+				cuppuccino.addOptions(opt1, opt2);
+				productList.add(cuppuccino);
+				break;
+			}
+			case 3: {
+				Product espresso = new Espresso("espresso", 1.99, "espresso coffee");
+				System.out.format("How much %s do you want to buy?\n", espresso.getName());
+				espresso.setQuantity(userInput.nextInt());
+				userInput.nextLine();
+				System.out.println("Extra Shot?(true/false)");
+				boolean opt1 = userInput.nextBoolean();
+				System.out.println("Machiatto?(true/false)");
+				boolean opt2 = userInput.nextBoolean();
+				espresso.addOptions(opt1, opt2);
+				productList.add(espresso);
+				break;
+			}
+			case 4: {
+				quit = true;
+				break;
+			}
+			default:
+				throw new IllegalArgumentException("Unexpected value: " + userOption);
+			}
+
+		}
+		if (!productList.isEmpty()) {
+			System.out.println("Proceed to checkout.");
+			double subtotal = 0;
+
+			for (Product p : productList) {
+				p.printOptions();
+				subtotal += p.calculateProductTotal();
+			}
+			double tax = subtotal * 0.10;
+			double total = subtotal + tax;
+			System.out.format("The subtotal is: %.2f\nThe tax is: %.2f\nThe total is: %.2f\n", subtotal, tax, total);
+		}
+		userInput.close();
+
+	}
+
+}
+
+
+package cafe_project;
+
+public abstract class Product {
+	private String name;
+	private double price;
+	private String description;
+	private int quantity;
+
+	public Product() {
+	};
+
+	public Product(String name, double price, String description) {
+		super();
+		this.name = name;
+		this.price = price;
+		this.description = description;
+	}
+	
+	public abstract void addOptions(boolean option1, boolean option2);
+	public abstract void printOptions();
+
+	public String getName() {
+		return name;
+	}
+
+	public double getPrice() {
+		return price;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public int getQuantity() {
+		return quantity;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setPrice(double price) {
+		this.price = price;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
+
+	public abstract double calculateProductTotal();
+}
+
+
+package cafe_project;
+
+public class Coffee extends Product {
+
+	private boolean hasMilk;
+	private boolean hasSugar;
+
+	public Coffee() {
+		super();
+		this.hasMilk = false;
+		this.hasSugar = false;
+	}
+
+	public Coffee(String name, double price, String description) {
+		super(name, price, description);
+	}
+
+	public boolean isHasMilk() {
+		return hasMilk;
+	}
+
+	public void setHasMilk(boolean hasMilk) {
+		this.hasMilk = hasMilk;
+	}
+
+	public boolean isHasSugar() {
+		return hasSugar;
+	}
+
+	public void setHasSugar(boolean hasSugar) {
+		this.hasSugar = hasSugar;
+	}
+
+	@Override
+	public double calculateProductTotal() {
+		// TODO Auto-generated method stub
+		return this.getPrice() * this.getQuantity();
+	}
+
+	@Override
+	public void addOptions(boolean option1, boolean option2) {
+		this.hasMilk = option1;
+		this.hasSugar = option2;
+	}
+
+	@Override
+	public void printOptions() {
+		System.out.format("Item:	%s	Price: %.2f	Qty: %d	 Subtotal: %.2f\r\n" + "	Sugar: %s	Milk: %s\n",
+				this.getName(), this.getPrice(), this.getQuantity(), this.calculateProductTotal(),
+				hasMilk ? "Yes" : "No", hasSugar ? "Yes" : "No");
+	}
+
+}
+
+
+package cafe_project;
+
+public class Espresso extends Product {
+	private boolean extraShot;
+	private boolean macchiato;
+
+	public Espresso() {
+		this.extraShot = false;
+		this.macchiato = false;
+	}
+
+	public Espresso(String name, double price, String description) {
+		super(name, price, description);
+	}
+
+	public boolean isExtraShot() {
+		return extraShot;
+	}
+
+	public void setExtraShot(boolean extraShot) {
+		this.extraShot = extraShot;
+	}
+
+	public boolean isMacchiato() {
+		return macchiato;
+	}
+
+	public void setMacchiato(boolean macchiato) {
+		this.macchiato = macchiato;
+	}
+
+	@Override
+	public double calculateProductTotal() {
+		// TODO Auto-generated method stub
+		double pricePerItem = this.getPrice();
+		if (extraShot) {
+			pricePerItem += 2;
+		}
+		if (macchiato) {
+			pricePerItem += 1;
+		}
+		double total = this.getQuantity() * pricePerItem;
+		return total;
+	}
+
+	@Override
+	public void addOptions(boolean option1, boolean option2) {
+		this.extraShot = option1;
+		this.macchiato = option2;
+
+	}
+
+	@Override
+	public void printOptions() {
+		System.out.format("Item:	%s	Price: %.2f	Qty: %d	 Subtotal: %.2f\r\n" + "	Extra Shot: %s	Machiatto: %s\n",
+				this.getName(), this.getPrice(), this.getQuantity(), this.calculateProductTotal(),
+				extraShot ? "Yes (Add $2)" : "No", macchiato ? "Yes (Add $1)" : "No");
+
+	}
+
+}
+
+
+package cafe_project;
+
+public class Cuppuccino extends Product {
+	private boolean peppermint;
+	private boolean whippedCream;
+
+	public Cuppuccino() {
+		super();
+		this.peppermint = false;
+		this.whippedCream = false;
+	}
+
+	public Cuppuccino(String name, double price, String description) {
+		super(name, price, description);
+	}
+
+	public boolean isPeppermint() {
+		return peppermint;
+	}
+
+	public void setPeppermint(boolean peppermint) {
+		this.peppermint = peppermint;
+	}
+
+	public boolean isWhippedCream() {
+		return whippedCream;
+	}
+
+	public void setWhippedCream(boolean whippedCream) {
+		this.whippedCream = whippedCream;
+	}
+
+	@Override
+	public double calculateProductTotal() {
+		double pricePerItem = this.getPrice();
+		if (peppermint) {
+			pricePerItem += 2;
+		}
+		if (whippedCream) {
+			pricePerItem += 1;
+		}
+		double total = this.getQuantity() * pricePerItem;
+		return total;
+
+	}
+
+	@Override
+	public void addOptions(boolean option1, boolean option2) {
+		this.peppermint = option1;
+		this.whippedCream = option2;
+	}
+
+	@Override
+	public void printOptions() {
+		System.out.format(
+				"Item:	%s	Price: %.2f	Qty: %d	 Subtotal: %.2f\r\n"
+						+ "	Peppermint: %s 	Whipped Cream: %s\n",
+				this.getName(), this.getPrice(), this.getQuantity(), this.calculateProductTotal(),
+				peppermint ? "Yes (Add $2)" : "No", whippedCream ? "Yes (Add $1)" : "No");
+	}
+
+}
